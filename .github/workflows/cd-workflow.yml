@@ -37,7 +37,7 @@ jobs:
             const inProgressRuns = await github.rest.actions.listWorkflowRuns({
               owner: 'ebk45',
               repo: 'github-actions',
-              workflow_id: context.workflow,
+              workflow_id: context.workflow + '.yaml',
               status: 'in_progress'
             });
             console.log(inProgressRuns)
