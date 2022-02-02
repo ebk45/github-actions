@@ -38,12 +38,8 @@ jobs:
               workflow_id: context.workflow + '.yml',
               status: 'in_progress'
             });
-            console.log("workflow runs", workflow_runs)
-            const runCount = workflow_runs.length
-            console.log("runCount", runCount)
-            return runCount
-      - name: echo output
-        run: echo ${{ steps.in-progress-runs.outputs.result }}
+            return workflow_runs.length
+          result-encoding: string
       - name: self approve workflow
         if: ${{ steps.in-progress-runs.outputs.result == 0 }}
         uses: actions/github-script@v5
