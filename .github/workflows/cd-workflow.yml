@@ -28,9 +28,25 @@ jobs:
     steps:
       - name: say "queue it"
         run: echo queue
+      - name: approve own workflow
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.MY_PAT }}
+          script: |
+            github.rest.actions.reviewPendingDeploymentsForRun({
+              owner: ebk45,
+              repo: github-actions,
+              run_id: github.run_id,
+              environment_ids: ['394310963'],
+              state: 'approved',
+              comment: 'approved to deploy to QA',
+            });
     # check if there's an another release currently running
     # if yes - this job will pass and not do anything
     # if no - this job will make an API call to approve the next job (deploy-to-qa)
+
+    # get the run id - github.run_id
+    # make a call to /repos/ebk45/github-actions/actions/runs/{run_id}/pending_deployments
   
   deploy-to-qa:
     needs: pre-release-checks
