@@ -28,7 +28,23 @@ jobs:
     steps:
       - name: say "queue it"
         run: echo queue
+      - name: check if existing run in progress
+        id: in-progress-runs
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          script: |
+            const inProgressRuns = github.rest.actions.listWorkflowRuns({
+              owner: 'ebk45',
+              repo: 'github-actions',
+              workflow_id: context.workflow,
+              status: 'in_progress'
+            });
+            console.log(inProgressRuns)
+            return inProgressRuns
+          result-encoding: string
       - name: approve own workflow
+        if: ${{steps.set-result.outputs.result}} > 0
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
@@ -55,3 +71,11 @@ jobs:
     steps:
       - name: say "ready"
         run: echo ready
+
+  approve-next-workflow-run:
+    needs: deploy-to-qa
+    environment: qa
+    runs-on: ubuntu-latest
+    steps:
+      - name: say "approving"
+        run: echo approving
