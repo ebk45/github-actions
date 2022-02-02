@@ -26,25 +26,25 @@ jobs:
     needs: pre-release-checks
     runs-on: ubuntu-latest
     steps:
-      - name: say "queue it"
-        run: echo queue
-      - name: check if existing run in progress
+      - name: check existing runs
         id: in-progress-runs
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
-            const inProgressRuns = await github.rest.actions.listWorkflowRuns({
+            const { data: { workflow_runs }} = await github.rest.actions.listWorkflowRuns({
               owner: 'ebk45',
               repo: 'github-actions',
               workflow_id: context.workflow + '.yml',
               status: 'in_progress'
             });
-            console.log(inProgressRuns)
-            return inProgressRuns
+            console.log("workflow runs", workflow_runs)
+            const runCount = workflow_runs.length()
+            console.log("runCount", runCount)
+            return runCount
           result-encoding: string
-      - name: approve own workflow
-        if: ${{steps.set-result.outputs.result}} > 0
+      - name: self approve workflow
+        if: ${{steps.in-progress-runs.outputs.result}} == 0
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
