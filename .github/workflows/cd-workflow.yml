@@ -39,7 +39,7 @@ jobs:
               status: 'in_progress'
             });
             console.log("workflow runs", workflow_runs)
-            const runCount = workflow_runs.length()
+            const runCount = workflow_runs.length
             console.log("runCount", runCount)
             return runCount
           result-encoding: string
