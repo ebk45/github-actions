@@ -34,7 +34,7 @@ jobs:
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
-            const inProgressRuns = github.rest.actions.listWorkflowRuns({
+            const inProgressRuns = await github.rest.actions.listWorkflowRuns({
               owner: 'ebk45',
               repo: 'github-actions',
               workflow_id: context.workflow,
