@@ -36,8 +36,8 @@ jobs:
             github.rest.actions.reviewPendingDeploymentsForRun({
               owner: 'ebk45',
               repo: 'github-actions',
-              run_id: github.run_id,
-              environment_ids: ['394310963'],
+              run_id: context.runId,
+              environment_ids: [394310963],
               state: 'approved',
               comment: 'approved to deploy to QA',
             });
