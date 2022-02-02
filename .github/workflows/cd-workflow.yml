@@ -43,14 +43,14 @@ jobs:
             console.log("runCount", runCount)
             return runCount
       - name: echo output
-        run: echo "${{ steps.in-progress-runs.outputs.result }}"
+        run: echo ${{ steps.in-progress-runs.outputs.result }}
       - name: self approve workflow
-        if: ${{ steps.in-progress-runs.outputs.result }} == '0'
+        if: ${{ steps.in-progress-runs.outputs.result == 0 }}
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
-            github.rest.actions.reviewPendingDeploymentsForRun({
+            await github.rest.actions.reviewPendingDeploymentsForRun({
               owner: 'ebk45',
               repo: 'github-actions',
               run_id: context.runId,
@@ -58,6 +58,7 @@ jobs:
               state: 'approved',
               comment: 'approved to deploy to QA',
             });
+            console.log("Workflow has been self approved")
     # check if there's an another release currently running
     # if yes - this job will pass and not do anything
     # if no - this job will make an API call to approve the next job (deploy-to-qa)
