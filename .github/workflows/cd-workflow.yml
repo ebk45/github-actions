@@ -34,8 +34,8 @@ jobs:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
             github.rest.actions.reviewPendingDeploymentsForRun({
-              owner: ebk45,
-              repo: github-actions,
+              owner: 'ebk45',
+              repo: 'github-actions',
               run_id: github.run_id,
               environment_ids: ['394310963'],
               state: 'approved',
