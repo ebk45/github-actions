@@ -76,3 +76,9 @@ jobs:
     steps:
       - name: say "approving"
         run: echo approving
+      - name: keep running for 5 mins
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          script: |
+            await new Promise(r => setTimeout(r, 60000));
