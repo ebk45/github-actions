@@ -1,0 +1,43 @@
+name: cd-workflow
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    paths:
+      - src/
+
+jobs:
+  ready-for-release:
+    runs-on: ubuntu-latest
+    environment: qa
+    steps:
+      - name: say "ready"
+        run: echo ready
+        # triggered by an external API call
+  
+  pre-release-checks:
+    needs: ready-for-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: say "checked"
+        run: echo checked
+    # check CI checks are passing
+
+  should-queue:
+    needs: pre-release-checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: say "queue it"
+        run: echo queued
+    # check if there's an another release currently running
+    # if yes - this job will pass and not do anything
+    # if no - this job will make an API call to approve the next job (deploy-to-qa)
+  
+  deploy-to-qa:
+    needs: pre-release-checks
+    environment: qa
+    runs-on: ubuntu-latest
+    steps:
+      - name: say "ready"
+        run: echo ready
