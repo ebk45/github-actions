@@ -38,6 +38,7 @@ jobs:
               workflow_id: context.workflow + '.yml',
               status: 'in_progress'
             });
+            console.log("Existing workflows = ", workflow_runs.length)
             return workflow_runs.length
           result-encoding: string
       - name: self approve workflow
@@ -84,6 +85,7 @@ jobs:
             const { data: { workflow_runs }} = await github.rest.actions.listWorkflowRuns({
               owner: 'ebk45',
               repo: 'github-actions',
-              workflow_id: context.workflow + '.yml'
+              workflow_id: context.workflow + '.yml',
+              status: 'waiting'
             });
             console.log(workflow_runs)
