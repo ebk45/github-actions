@@ -84,8 +84,6 @@ jobs:
             const workflowRuns = await github.rest.actions.listWorkflowRuns({
               owner: 'ebk45',
               repo: 'github-actions',
-              workflow_id: context.workflow + '.yml',
-              status: 'in_progress'
+              workflow_id: context.workflow + '.yml'
             });
             console.log(workflowRuns)
-            return workflow_runs.length
