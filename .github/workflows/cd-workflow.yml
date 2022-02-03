@@ -4,8 +4,6 @@ on:
     types:
       - opened
       - synchronize
-    paths:
-      - src/
 
 jobs:
   ready-for-release:
@@ -28,11 +26,45 @@ jobs:
     needs: pre-release-checks
     runs-on: ubuntu-latest
     steps:
-      - name: say "queue it"
-        run: echo queued
+      - name: check existing runs
+        id: in-progress-runs
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          script: |
+            const { data: { workflow_runs }} = await github.rest.actions.listWorkflowRuns({
+              owner: 'ebk45',
+              repo: 'github-actions',
+              workflow_id: context.workflow + '.yml',
+              status: 'in_progress'
+            });
+            console.log("workflow runs", workflow_runs)
+            const runCount = workflow_runs.length
+            console.log("runCount", runCount)
+            return runCount
+      - name: echo output
+        run: echo ${{ steps.in-progress-runs.outputs.result }}
+      - name: self approve workflow
+        if: ${{ steps.in-progress-runs.outputs.result == 0 }}
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          script: |
+            await github.rest.actions.reviewPendingDeploymentsForRun({
+              owner: 'ebk45',
+              repo: 'github-actions',
+              run_id: context.runId,
+              environment_ids: [394310963],
+              state: 'approved',
+              comment: 'approved to deploy to QA',
+            });
+            console.log("Workflow has been self approved")
     # check if there's an another release currently running
     # if yes - this job will pass and not do anything
     # if no - this job will make an API call to approve the next job (deploy-to-qa)
+
+    # get the run id - github.run_id
+    # make a call to /repos/ebk45/github-actions/actions/runs/{run_id}/pending_deployments
   
   deploy-to-qa:
     needs: pre-release-checks
@@ -41,3 +73,10 @@ jobs:
     steps:
       - name: say "ready"
         run: echo ready
+
+  approve-next-workflow-run:
+    needs: deploy-to-qa
+    runs-on: ubuntu-latest
+    steps:
+      - name: say "approving"
+        run: echo approving
