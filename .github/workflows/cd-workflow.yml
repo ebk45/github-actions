@@ -81,4 +81,11 @@ jobs:
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
-            await new Promise(r => setTimeout(r, 120000));
+            const workflowRuns = await github.rest.actions.listWorkflowRuns({
+              owner: 'ebk45',
+              repo: 'github-actions',
+              workflow_id: context.workflow + '.yml',
+              status: 'in_progress'
+            });
+            console.log(workflowRuns)
+            return workflow_runs.length
