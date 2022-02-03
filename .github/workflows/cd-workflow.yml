@@ -81,9 +81,9 @@ jobs:
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
           script: |
-            const workflowRuns = await github.rest.actions.listWorkflowRuns({
+            const { data: { workflow_runs }} = await github.rest.actions.listWorkflowRuns({
               owner: 'ebk45',
               repo: 'github-actions',
               workflow_id: context.workflow + '.yml'
             });
-            console.log(workflowRuns)
+            console.log(workflow_runs)
