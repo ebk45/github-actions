@@ -64,7 +64,7 @@ jobs:
     # make a call to /repos/ebk45/github-actions/actions/runs/{run_id}/pending_deployments
   
   deploy-to-qa:
-    needs: [pre-release-checks, should-queue]
+    needs: [pre-release-checks]
     environment: qa
     runs-on: ubuntu-latest
     steps:
