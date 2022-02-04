@@ -64,7 +64,7 @@ jobs:
     # make a call to /repos/ebk45/github-actions/actions/runs/{run_id}/pending_deployments
   
   deploy-to-qa:
-    needs: pre-release-checks
+    needs: [pre-release-checks, should-queue]
     environment: qa
     runs-on: ubuntu-latest
     steps:
@@ -89,3 +89,13 @@ jobs:
               status: 'waiting'
             });
             console.log(workflow_runs)
+            const nextRun = workflow_runs.pop()
+            await github.rest.actions.reviewPendingDeploymentsForRun({
+              owner: 'ebk45',
+              repo: 'github-actions',
+              run_id: nextRun.id,
+              environment_ids: [394310963],
+              state: 'approved',
+              comment: 'approved to deploy to QA',
+            });
+            console.log("approved next in line")
