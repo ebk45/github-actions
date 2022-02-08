@@ -11,8 +11,29 @@ on:
 jobs:
   testing-concurrency:
     runs-on: ubuntu-latest
-    environment: qa
     steps:
       - name: say "ready"
         run: echo ready
-        # triggered by an external API call
+  ready-for-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: say "ready"
+        run: echo ready
+  
+  pre-release-checks:
+    needs: ready-for-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: say "checked"
+        run: echo checked
+  ready-for-release2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: say "ready"
+        run: echo ready
+  pre-release-checks2:
+    needs: ready-for-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: say "checked"
+        run: echo checked
