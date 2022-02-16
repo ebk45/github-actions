@@ -77,7 +77,7 @@ jobs:
     steps:
       - name: say "approving"
         run: echo approving
-      - name: keep running for 2 mins
+      - name: approve next workflow run
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
