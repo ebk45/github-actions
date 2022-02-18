@@ -1,0 +1,41 @@
+name: concurrency-test
+on:
+  workflow_dispatch:
+    commit_sha:
+      name:
+        description: 'the commit sha to redeploy'
+        required: false
+
+jobs:
+  check-commit:
+    runs-on: ubuntu-latest
+    outputs:
+      commit: ${{ steps.setCommit.outputs.result }}
+    steps:
+      - name: set commit
+        id: setCommit
+        uses: actions/github-script@v5
+        with:
+          script: |
+            if (inputs && inputs.commit_sha) {
+              return inputs.commit_sha
+            }
+            const { data: { workflow_runs }} = await github.rest.actions.listWorkflowRuns({
+              owner: 'ebk45',
+              repo: 'github-actions',
+              workflow_id: 'cd-workflow.yml',
+              status: 'success',
+              exclude_pull_requests: true
+            });
+            console.log(workflow_runs[0])
+            const latestSuccessfulCommit = workflow_runs[0].head_sha;
+            console.log({latestSuccessfulCommit})
+            return latestSuccessfulCommit
+          result-encoding: string
+  
+  redeploy-preview:
+    needs: check-commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: check commit
+        run: echo "${{ needs.check-commit.outputs.commit }}"
