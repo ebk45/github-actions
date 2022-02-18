@@ -38,12 +38,9 @@ jobs:
               workflow_id: context.workflow + '.yml',
               status: 'in_progress'
             });
-            console.log("workflow runs", workflow_runs)
-            const runCount = workflow_runs.length
-            console.log("runCount", runCount)
-            return runCount
-      - name: echo output
-        run: echo ${{ steps.in-progress-runs.outputs.result }}
+            console.log("Existing workflows = ", workflow_runs.length)
+            return workflow_runs.length
+          result-encoding: string
       - name: self approve workflow
         if: ${{ steps.in-progress-runs.outputs.result == 0 }}
         uses: actions/github-script@v5
@@ -67,7 +64,7 @@ jobs:
     # make a call to /repos/ebk45/github-actions/actions/runs/{run_id}/pending_deployments
   
   deploy-to-qa:
-    needs: pre-release-checks
+    needs: [pre-release-checks]
     environment: qa
     runs-on: ubuntu-latest
     steps:
@@ -80,3 +77,25 @@ jobs:
     steps:
       - name: say "approving"
         run: echo approving
+      - name: approve next workflow run
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          script: |
+            const { data: { workflow_runs }} = await github.rest.actions.listWorkflowRuns({
+              owner: 'ebk45',
+              repo: 'github-actions',
+              workflow_id: context.workflow + '.yml',
+              status: 'waiting'
+            });
+            console.log(workflow_runs)
+            const nextRun = workflow_runs.pop()
+            await github.rest.actions.reviewPendingDeploymentsForRun({
+              owner: 'ebk45',
+              repo: 'github-actions',
+              run_id: nextRun.id,
+              environment_ids: [394310963],
+              state: 'approved',
+              comment: 'approved to deploy to QA',
+            });
+            console.log("approved next in line")
