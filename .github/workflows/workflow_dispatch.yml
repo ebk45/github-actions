@@ -21,7 +21,7 @@ jobs:
         uses: actions/github-script@v5
         with:
           script: |
-            if (context.payload?.inputs?.commit_sha) {
+            if (context.payload.inputs.commit_sha) {
               return context.payload.inputs.commit_sha
             }
             const { data: { workflow_runs }} = await github.rest.actions.listWorkflowRuns({
