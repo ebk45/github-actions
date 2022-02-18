@@ -5,10 +5,6 @@ on:
       name:
         description: 'the commit sha to redeploy'
         required: false
-  pull_request:
-    types:
-      - opened
-      - synchronize
 
 jobs:
   check-commit:
