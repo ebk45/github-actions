@@ -1,4 +1,4 @@
-name: concurrency-test
+name: workflow_dispatch
 on:
   workflow_dispatch:
     commit_sha:
